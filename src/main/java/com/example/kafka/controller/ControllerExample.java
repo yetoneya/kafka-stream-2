@@ -4,23 +4,26 @@ import com.example.kafka.service.KafkaProducerExample;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("example")
 public class ControllerExample {
 
-    private final KafkaProducerExample kafkaProducerConfigured;
+    private final KafkaProducerExample kafkaProducerExample;
 
     @Autowired
     public ControllerExample(KafkaProducerExample kafkaProducerConfigured) {
-        this.kafkaProducerConfigured = kafkaProducerConfigured;
+        this.kafkaProducerExample = kafkaProducerConfigured;
     }
 
-    @PostMapping
+    @PostMapping("/example")
     public void sendData(String messageId, String message) {
-       kafkaProducerConfigured.sendData(messageId, message);
+       kafkaProducerExample.sendData(messageId, message);
+    }
+
+    @PostMapping("/partition")
+    public void sendDataToPartition(String messageId, String message) {
+        kafkaProducerExample.sendData(messageId, message);
     }
 }

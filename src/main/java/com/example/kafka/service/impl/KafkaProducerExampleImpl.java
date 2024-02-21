@@ -22,12 +22,15 @@ public class KafkaProducerExampleImpl implements KafkaProducerExample {
     public void sendData(String messageId, String message) {
         // kafkaTemplate.send("topic2", messageId, message);
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send("topic2", messageId, message);
-        try {
-            System.out.println(future.handle((success, error) -> success != null ? success : error.getMessage()).get());
-            //SendResult [producerRecord=ProducerRecord(topic=topic2, partition=null, headers=RecordHeaders(headers = [], isReadOnly = true), key=1, value=catch another 10, timestamp=null), recordMetadata=topic2-0@14]
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        kafkaTemplate.flush();
+        future.whenComplete((result, ex) -> {
+            if (ex == null) {
+                System.out.println("Sent message=[" + message +
+                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+            } else {
+                System.out.println("Unable to send message=[" +
+                        message + "] due to : " + ex.getMessage());
+            }
+        });
+        //kafkaTemplate.flush();
     }
 }
